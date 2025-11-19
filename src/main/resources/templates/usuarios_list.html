@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuários</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/script.js}"></script>
+    <script>
+        (function(){
+          try {
+            var theme = localStorage.getItem('theme');
+            if(!theme) {
+              // se não houver escolha, podemos optar por dark default detection:
+              var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+              theme = prefersDark ? 'dark' : 'light';
+            }
+            if(theme === 'dark') {
+              document.documentElement.setAttribute('data-theme','dark');
+            } else {
+              document.documentElement.removeAttribute('data-theme');
+            }
+          } catch(e) { /* ignore */ }
+        })();
+    </script>
+</head>
+<body>
+<div class="container">
+
+    <!-- mensagens flash / erros -->
+    <div th:replace="fragments/alerts :: alerts"></div>
+
+    <div class="header-card">
+        <button id="theme-toggle" class="btn btn-neutral" title="Alternar tema">🌙 <span id="theme-label">Dark</span></button>
+
+        <div class="header-left">
+            <h1>Gerenciamento de Usuários</h1>
+            <p class="text-muted">CRUD -Cadastro de Usuários + importação de Excel!</p>
+        </div>
+
+        <div class="controls">
+            <form th:action="@{/usuarios}" method="get">
+                <input class="input-search" type="text" name="busca" placeholder="Buscar por nome ou email" th:value="${busca}">
+                <button class="btn btn-neutral" type="submit">Buscar</button>
+            </form>
+
+            <a class="btn btn-primary" th:href="@{/usuarios/novo}">Novo usuário</a>
+            <a class="btn btn-neutral" th:href="@{/usuarios/importar}">Importar Excel</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Data Criação</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${usuariosPage.content}">
+                <td>
+                    <div class="name" th:text="${u.nome}">Nome</div>
+                    <div class="email" th:text="${u.email}">email</div>
+                </td>
+                <td th:text="${u.email}">email</td>
+                <td>
+                    <span th:classappend="${u.status == 'ATIVO'} ? 'badge activo' : 'badge inativo'" th:text="${u.status}">ATIVO</span>
+                </td>
+                <td th:text="${u.dataCriacao != null ? #temporals.format(u.dataCriacao, 'dd/MM/yyyy HH:mm') : ' - '}">data</td>
+                <td>
+                    <div class="actions">
+                        <a th:href="@{/usuarios/editar/{id}(id=${u.id})}" class="action-link"><span class="icon-edit"></span>Editar</a>
+                        <form th:action="@{/usuarios/remover/{id}(id=${u.id})}" method="post" style="display:inline" onsubmit="return confirmarExclusao()">
+                            <button type="submit" class="btn btn-danger btn-small"><span class="icon-delete"></span>Remover</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <div class="text-muted" th:text="'Página ' + ${usuariosPage.number + 1} + ' de ' + ${usuariosPage.totalPages}"></div>
+            <div>
+                <a th:if="${!usuariosPage.first}" th:href="@{/usuarios(page=${usuariosPage.number - 1}, size=${usuariosPage.size}, busca=${busca})}" class="page-btn">Anterior</a>
+                <a th:if="${!usuariosPage.last}" th:href="@{/usuarios(page=${usuariosPage.number + 1}, size=${usuariosPage.size}, busca=${busca})}" class="page-btn">Próxima</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<div th:fragment="alerts">
+    <!-- Mensagem de sucesso (flash) -->
+    <div th:if="${msgSucesso}" class="alert alert-success" th:text="${msgSucesso}"></div>
+
+    <!-- Mensagem de erro simples (flash ou model) -->
+    <div th:if="${erro}" class="alert alert-error" th:text="${erro}"></div>
+
+    <!-- Erros retornados pela importação (resultado.erros) -->
+    <div th:if="${resultado != null and #lists.size(resultado.erros) > 0}" class="alert alert-error">
+        <strong>Erros na importação:</strong>
+        <ul>
+            <li th:each="e : ${resultado.erros}" th:text="${e}"></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

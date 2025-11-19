@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Importar Excel • Usuários</title>
+    <script>
+    (function(){
+      try {
+        var theme = localStorage.getItem('theme');
+        if(!theme) {
+          // se não houver escolha, podemos optar por dark default detection:
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          theme = prefersDark ? 'dark' : 'light';
+        }
+        if(theme === 'dark') {
+          document.documentElement.setAttribute('data-theme','dark');
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+        }
+      } catch(e) { /* ignore */ }
+    })();
+</script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/script.js}" defer></script>
+
+</head>
+<body>
+<div class="container">
+
+    <!-- Header card com toggle de tema -->
+    <div class="header-card">
+        <button id="theme-toggle" class="btn btn-neutral" title="Alternar tema">🌙 <span id="theme-label">Dark</span></button>
+        <div class="header-left">
+            <h1>Importar usuários (.xlsx)</h1>
+            <p class="text-muted">Envie um arquivo no formato <strong>nome, email, status</strong>. Status é opcional.</p>
+        </div>
+
+        <div class="controls">
+            <a class="btn btn-neutral" th:href="@{/usuarios}">Voltar à lista</a>
+
+            <!-- Toggle de tema (dark/light) -->
+            <button id="theme-toggle" class="btn btn-neutral" title="Alternar tema">🌙 <span id="theme-label">Dark</span></button>
+        </div>
+    </div>
+
+    <!-- Card central -->
+    <div class="card import-card">
+        <div class="import-grid">
+            <div class="import-preview">
+                <div class="import-illustration">📄</div>
+                <div class="import-txt">
+                    <h2>Arraste e solte o arquivo .xlsx</h2>
+                    <p class="text-muted">Ou clique em <strong>Selecionar arquivo</strong> para escolher no seu computador. Máx 10MB.</p>
+                </div>
+            </div>
+
+            <form th:action="@{/usuarios/importar}" method="post" enctype="multipart/form-data" class="import-form">
+                <label class="file-input-wrapper">
+                    <input type="file" name="file" accept=".xlsx" required />
+                    <span class="file-btn">Selecionar arquivo</span>
+                </label>
+
+                <div class="form-actions" style="justify-content:flex-start;">
+                    <button type="submit" class="btn btn-primary">Importar</button>
+                    <a th:href="@{/usuarios}" class="btn btn-neutral">Cancelar</a>
+                </div>
+
+                <div style="margin-top:14px;">
+                    <small class="text-muted">Exemplo: planilha com cabeçalho <code>nome, email, status</code>.</small>
+                </div>
+            </form>
+        </div>
+
+        <!-- Resultado (flash/attr 'resultado' do controller) -->
+        <div th:replace="fragments/alerts :: alerts" style="margin-top:16px"></div>
+    </div>
+
+</div>
+</body>
+</html>
